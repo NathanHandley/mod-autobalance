@@ -884,7 +884,7 @@ AutoBalance.RewardScaling.Method="dynamic"
 #        rewarded to each player, 150xp will be rewarded.
 #
 #        Default: 1.0 (no change)
-AutoBalance.RewardScaling.XP = 0
+AutoBalance.RewardScaling.XP = 1
 AutoBalance.RewardScaling.XP.Modifier = 1.0
 
 #
