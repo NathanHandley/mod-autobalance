@@ -22,7 +22,8 @@
 /*
 * Script Name: AutoBalance
 * Original Authors: KalCorp and Vaughner
-* Maintainer(s): AzerothCore
+* Original Maintainer(s): AzerothCore
+* Modifications Author/Maintainer: Nathan Handley (For Eternal Wrath)
 * Original Script Name: AutoBalance
 * Description: This script is intended to scale based on number of players,
 * instance mobs & world bosses' level, health, mana, and damage.
@@ -192,6 +193,7 @@ public:
 
     uint8 playerCount = 0;                           // the actual number of non-GM players in the map
     uint8 adjustedPlayerCount = 0;                   // the currently difficulty level expressed as number of players
+    uint8 overridePlayerCount = 0;                   // override difficulty if set
     uint8 minPlayers = 1;                            // will be set by the config
 
     uint8 mapLevel = 0;                              // calculated from the avgCreatureLevel
@@ -2597,8 +2599,11 @@ void UpdateMapPlayerStats(Map* map)
     if (adjustedPlayerCount < mapABInfo->minPlayers)
         adjustedPlayerCount = mapABInfo->minPlayers;
 
-    // adjust by the PlayerDifficultyOffset
-    adjustedPlayerCount += PlayerCountDifficultyOffset;
+    // adjust by the override, or the PlayerDifficultyOffset
+    if (mapABInfo->overridePlayerCount > 0)
+        adjustedPlayerCount = mapABInfo->overridePlayerCount;
+    else
+        adjustedPlayerCount += PlayerCountDifficultyOffset;
 
     // store the adjusted player count in the map's info
     mapABInfo->adjustedPlayerCount = adjustedPlayerCount;
@@ -3707,7 +3712,7 @@ class AutoBalance_PlayerScript : public PlayerScript
                     {
                         if (player && player->GetSession())
                         {
-                            ChatHandler(player->GetSession()).PSendSysMessage("|cffc3dbff [AutoBalance]|r|cffFF8000 Combat has ended. Difficulty is no longer locked.|r");
+                            ChatHandler(player->GetSession()).PSendSysMessage("Combat has ended. Map Difficulty is no longer locked.|r");
                         }
                     }
                 }
@@ -4638,10 +4643,7 @@ class AutoBalance_AllMapScript : public AllMapScript
 
                                 if (thisPlayer && thisPlayer == player) // This is the player that entered
                                 {
-                                    chatHandle.PSendSysMessage("|cffc3dbff [AutoBalance]|r|cffFF8000 Welcome to %s (%u-player %s). There are %u player(s) in this instance. Difficulty set to %u player(s).|r",
-                                        map->GetMapName(),
-                                        instanceMap->GetMaxPlayers(),
-                                        instanceDifficulty,
+                                    chatHandle.PSendSysMessage("There are %u player(s) in this instance. Difficulty is set to %u player(s).|r",
                                         mapABInfo->playerCount,
                                         mapABInfo->adjustedPlayerCount
                                     );
@@ -4649,7 +4651,7 @@ class AutoBalance_AllMapScript : public AllMapScript
                                     // notify GMs that they won't be accounted for
                                     if (player->IsGameMaster())
                                     {
-                                        chatHandle.PSendSysMessage("|cffc3dbff [AutoBalance]|r|cffFF8000 Your GM flag is turned on. AutoBalance will ignore you. Please turn GM off and exit/re-enter the instance if you'd like to be considering for AutoBalancing.|r");
+                                        chatHandle.PSendSysMessage("Your GM flag is turned on. AutoBalance will ignore you. Please turn GM off and exit/re-enter the instance if you'd like to be considering for AutoBalancing.|r");
                                     }
                                 }
                                 else
@@ -4657,7 +4659,7 @@ class AutoBalance_AllMapScript : public AllMapScript
                                     // announce non-GMs entering the instance only
                                     if (!player->IsGameMaster())
                                     {
-                                        chatHandle.PSendSysMessage("|cffc3dbff [AutoBalance]|r|cffFF8000 %s enters the instance. There are %u player(s) in this instance. Difficulty set to %u player(s).|r",
+                                        chatHandle.PSendSysMessage("%s enters the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r",
                                             player->GetName().c_str(),
                                             mapABInfo->playerCount,
                                             mapABInfo->adjustedPlayerCount
@@ -4770,14 +4772,14 @@ class AutoBalance_AllMapScript : public AllMapScript
 
                                 if (mapABInfo->combatLocked)
                                 {
-                                    chatHandle.PSendSysMessage("|cffc3dbff [AutoBalance]|r|cffFF8000 %s left the instance while combat was in progress. Difficulty locked to no less than %u players until combat ends.|r",
+                                    chatHandle.PSendSysMessage("%s left the instance while combat was in progress. Difficulty locked to no less than %u players until combat ends.|r",
                                         player->GetName().c_str(),
                                         mapABInfo->adjustedPlayerCount
                                     );
                                 }
                                 else
                                 {
-                                    chatHandle.PSendSysMessage("|cffc3dbff [AutoBalance]|r|cffFF8000 %s left the instance. There are %u player(s) in this instance. Difficulty set to %u player(s).|r",
+                                    chatHandle.PSendSysMessage("%s left the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r",
                                         player->GetName().c_str(),
                                         mapABInfo->playerCount,
                                         mapABInfo->adjustedPlayerCount
@@ -6439,48 +6441,66 @@ public:
     {
         static std::vector<ChatCommand> ABCommandTable =
         {
-            { "setoffset",        SEC_GAMEMASTER,                        true, &HandleABSetOffsetCommand,                 "Sets the global Player Difficulty Offset for instances. Example: (You + offset(1) = 2 player difficulty)." },
-            { "getoffset",        SEC_PLAYER,                            true, &HandleABGetOffsetCommand,                 "Shows current global player offset value." },
-            { "mapstat",          SEC_PLAYER,                            true, &HandleABMapStatsCommand,                  "Shows current autobalance information for this map" },
-            { "creaturestat",     SEC_PLAYER,                            true, &HandleABCreatureStatsCommand,             "Shows current autobalance information for selected creature." },
+            { "setplayers",        SEC_PLAYER,                            true, &HandleABPlayerOffsetCommand,              "Sets a fixed difficulty of the map bassed on the number of passed players." },
+            { "getmapstat",        SEC_PLAYER,                            true, &HandleABMapStatsCommand,                  "Shows current autobalance information for this map" },
+            { "getcreaturestat",   SEC_PLAYER,                            true, &HandleABCreatureStatsCommand,             "Shows current autobalance information for selected creature." },
         };
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "autobalance",     SEC_PLAYER,                             false, NULL,                      "", ABCommandTable },
-            { "ab",              SEC_PLAYER,                             false, NULL,                      "", ABCommandTable },
+            { "dungeonscale",       SEC_PLAYER,                             false, NULL,                      "", ABCommandTable },
         };
         return commandTable;
     }
 
-    static bool HandleABSetOffsetCommand(ChatHandler* handler, const char* args)
+    static bool HandleABPlayerOffsetCommand(ChatHandler* handler, const char* args)
     {
         if (!*args)
         {
-            handler->PSendSysMessage(".autobalance setoffset #");
-            handler->PSendSysMessage("Sets the Player Difficulty Offset for instances. Example: (You + offset(1) = 2 player difficulty).");
+            handler->PSendSysMessage(".dungeon players #");
+            handler->PSendSysMessage("Sets the locked Player Difficulty for the current instance, or 0 or -1 to clear.  Example: '.dungeon players 2' = 2 player difficulty.");
             return false;
         }
-        char* offset = strtok((char*)args, " ");
-        int32 offseti = -1;
 
+        Player* player = handler->GetPlayer();
+        if (player->GetMap()->IsDungeon() == false)
+        {
+            handler->PSendSysMessage("This command can only be used in a dungeon or raid.");
+            return false;
+        }
+
+        char* offset = strtok((char*)args, " ");
+        int32 newOffset = 0;
         if (offset)
         {
-            offseti = (uint32)atoi(offset);
-            handler->PSendSysMessage("Changing Player Difficulty Offset to %i.", offseti);
-            PlayerCountDifficultyOffset = offseti;
-            globalConfigTime = GetCurrentConfigTime();
+            newOffset = (int32)atoi(offset);
+            if (newOffset == -1 || newOffset == 0)
+            {
+                handler->PSendSysMessage("Clearing Locked Player Difficulty for the current dungeon instance...", newOffset);
+                newOffset = 0;
+            }
+            else if (newOffset > player->GetMap()->ToInstanceMap()->GetMaxPlayers())
+            {
+                handler->PSendSysMessage("Passed number of players is higher than the map max players, so setting to %u", player->GetMap()->ToInstanceMap()->GetMaxPlayers());
+                handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance, even if players join or leave...", newOffset);
+                newOffset = player->GetMap()->ToInstanceMap()->GetMaxPlayers();
+            }
+            else
+            {
+                handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance, even if players join or leave...", newOffset);
+            }
+
+            AutoBalanceMapInfo* mapABInfo = player->GetMap()->CustomData.GetDefault<AutoBalanceMapInfo>("AutoBalanceMapInfo");
+            mapABInfo->overridePlayerCount = newOffset;
+            mapABInfo->globalConfigTime = mapABInfo->globalConfigTime - 1;
+
             return true;
         }
         else
-            handler->PSendSysMessage("Error changing Player Difficulty Offset! Please try again.");
-        return false;
-    }
-
-    static bool HandleABGetOffsetCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        handler->PSendSysMessage("Current Player Difficulty Offset = %i", PlayerCountDifficultyOffset);
-        return true;
+        {
+            handler->PSendSysMessage("Error changing Player Difficulty! (Was a number of players provided?)");
+            return false;
+        }
     }
 
     static bool HandleABMapStatsCommand(ChatHandler* handler, const char* /*args*/)
