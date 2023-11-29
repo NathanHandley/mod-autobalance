@@ -171,13 +171,13 @@ AutoBalance.MinPlayers.Heroic.PerInstance = ""
 
 ### 5-player dungeons
 AutoBalance.InflectionPoint=0.5
-AutoBalance.InflectionPoint.CurveFloor=0.0
+AutoBalance.InflectionPoint.CurveFloor=0.1
 AutoBalance.InflectionPoint.CurveCeiling=1.0
 AutoBalance.InflectionPoint.BossModifier=1.0
 
 ### 5-player heroic dungeons
 AutoBalance.InflectionPointHeroic=0.5
-AutoBalance.InflectionPointHeroic.CurveFloor=0.0
+AutoBalance.InflectionPointHeroic.CurveFloor=0.1
 AutoBalance.InflectionPointHeroic.CurveCeiling=1.0
 AutoBalance.InflectionPointHeroic.BossModifier=1.0
 
@@ -714,7 +714,7 @@ AutoBalance.DisabledID=""
 #        0 = Disabled
 #        1 = Enabled (only in dungeons/raids)
 #        Default:     1
-AutoBalance.LevelScaling=1
+AutoBalance.LevelScaling=0
 
 #
 #     AutoBalance.LevelScaling.Method
@@ -884,7 +884,7 @@ AutoBalance.RewardScaling.Method="dynamic"
 #        rewarded to each player, 150xp will be rewarded.
 #
 #        Default: 1.0 (no change)
-AutoBalance.RewardScaling.XP = 1
+AutoBalance.RewardScaling.XP = 0
 AutoBalance.RewardScaling.XP.Modifier = 1.0
 
 #
@@ -903,7 +903,7 @@ AutoBalance.RewardScaling.XP.Modifier = 1.0
 #        rewarded to each player, 1 gold 50 silver will be rewarded.
 #
 #        Default: 1.0 (no change)
-AutoBalance.RewardScaling.Money = 1
+AutoBalance.RewardScaling.Money = 0
 AutoBalance.RewardScaling.Money.Modifier = 1.0
 
 ##########################
@@ -965,7 +965,7 @@ AutoBalance.reward.MinPlayerReward = 1
 #     AutoBalanceAnnounce.enable
 #        Announce the module on login if it is enabled
 #        Default:     1 (1 = ON, 0 = OFF)
-AutoBalanceAnnounce.enable=1
+AutoBalanceAnnounce.enable=0
 
 ##########################
 #
