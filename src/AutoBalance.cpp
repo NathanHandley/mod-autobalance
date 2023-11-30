@@ -3588,7 +3588,7 @@ class AutoBalance_PlayerScript : public PlayerScript
                     {
                         // Ensure that the players always get the same money, even when entering the dungeon alone
                         auto maxPlayerCount = map->ToInstanceMap()->GetMaxPlayers();
-                        auto currentPlayerCount = mapABInfo->playerCount;
+                        auto currentPlayerCount = mapABInfo->adjustedPlayerCount;
                         LOG_DEBUG("module.AutoBalance", "AutoBalance_PlayerScript::OnBeforeLootMoney: Distributing money from '{}' in fixed mode - {}->{}",
                                  sourceCreature->GetName(), loot->gold, uint32(loot->gold * creatureABInfo->MoneyModifier * ((float)currentPlayerCount / maxPlayerCount)));
                         loot->gold = uint32(loot->gold * creatureABInfo->MoneyModifier * ((float)currentPlayerCount / maxPlayerCount));
@@ -3598,7 +3598,7 @@ class AutoBalance_PlayerScript : public PlayerScript
                 else
                 {
                     auto maxPlayerCount = map->ToInstanceMap()->GetMaxPlayers();
-                    auto currentPlayerCount = mapABInfo->playerCount;
+                    auto currentPlayerCount = mapABInfo->adjustedPlayerCount;
                     LOG_DEBUG("module.AutoBalance", "AutoBalance_PlayerScript::OnBeforeLootMoney: Distributing money from a non-creature in fixed mode - {}->{}",
                              loot->gold, uint32(loot->gold * ((float)currentPlayerCount / maxPlayerCount)));
                     loot->gold = uint32(loot->gold * ((float)currentPlayerCount / maxPlayerCount));
@@ -4647,7 +4647,7 @@ class AutoBalance_AllMapScript : public AllMapScript
 
                                 if (thisPlayer && thisPlayer == player) // This is the player that entered
                                 {
-                                    chatHandle.PSendSysMessage("There are %u player(s) in this instance. Difficulty is set to %u player(s).|r Use '.dungeon players' to adjust.",
+                                    chatHandle.PSendSysMessage("There are %u player(s) in this instance. Difficulty is set to %u player(s).|r Use '.dungeon setplayers' to adjust.",
                                         mapABInfo->playerCount,
                                         mapABInfo->adjustedPlayerCount
                                     );
@@ -4663,7 +4663,7 @@ class AutoBalance_AllMapScript : public AllMapScript
                                     // announce non-GMs entering the instance only
                                     if (!player->IsGameMaster())
                                     {
-                                        chatHandle.PSendSysMessage("%s enters the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r  Use '.dungeon players' to adjust.",
+                                        chatHandle.PSendSysMessage("%s enters the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r  Use '.dungeon setplayers' to adjust.",
                                             player->GetName().c_str(),
                                             mapABInfo->playerCount,
                                             mapABInfo->adjustedPlayerCount
@@ -4783,7 +4783,7 @@ class AutoBalance_AllMapScript : public AllMapScript
                                 }
                                 else
                                 {
-                                    chatHandle.PSendSysMessage("%s left the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r  Use '.dungeon players' to adjust.",
+                                    chatHandle.PSendSysMessage("%s left the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r  Use '.dungeon setplayers' to adjust.",
                                         player->GetName().c_str(),
                                         mapABInfo->playerCount,
                                         mapABInfo->adjustedPlayerCount
