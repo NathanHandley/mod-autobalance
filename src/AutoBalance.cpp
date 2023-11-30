@@ -351,6 +351,7 @@ static float MinHPModifier, MinManaModifier, MinDamageModifier, MinCCDurationMod
 static ScalingMethod RewardScalingMethod;
 static bool RewardScalingXP, RewardScalingMoney;
 static float RewardScalingXPModifier, RewardScalingMoneyModifier;
+static bool RewardScalingLoot, RewardScalingLootBOPAlwaysDropException;
 
 // Track the initial config time
 static uint64_t globalConfigTime = GetCurrentConfigTime();
@@ -3468,6 +3469,9 @@ class AutoBalance_WorldScript : public WorldScript
         RewardScalingMoney = sConfigMgr->GetOption<bool>("AutoBalance.RewardScaling.Money", sConfigMgr->GetOption<bool>("AutoBalance.DungeonScaleDownMoney", true, false));
         RewardScalingMoneyModifier = sConfigMgr->GetOption<float>("AutoBalance.RewardScaling.Money.Modifier", 1.0f, false);
 
+        RewardScalingLoot = sConfigMgr->GetOption<bool>("AutoBalance.RewardScaling.Loot", true);
+        RewardScalingLootBOPAlwaysDropException = sConfigMgr->GetOption<bool>("AutoBalance.RewardScaling.Loot.BOPAlwaysDropException", true);
+
         // Announcement
         Announcement = sConfigMgr->GetOption<bool>("AutoBalanceAnnounce.enable", true);
 
@@ -4643,7 +4647,7 @@ class AutoBalance_AllMapScript : public AllMapScript
 
                                 if (thisPlayer && thisPlayer == player) // This is the player that entered
                                 {
-                                    chatHandle.PSendSysMessage("There are %u player(s) in this instance. Difficulty is set to %u player(s).|r",
+                                    chatHandle.PSendSysMessage("There are %u player(s) in this instance. Difficulty is set to %u player(s).|r Use '.dungeon players' to adjust.",
                                         mapABInfo->playerCount,
                                         mapABInfo->adjustedPlayerCount
                                     );
@@ -4659,7 +4663,7 @@ class AutoBalance_AllMapScript : public AllMapScript
                                     // announce non-GMs entering the instance only
                                     if (!player->IsGameMaster())
                                     {
-                                        chatHandle.PSendSysMessage("%s enters the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r",
+                                        chatHandle.PSendSysMessage("%s enters the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r  Use '.dungeon players' to adjust.",
                                             player->GetName().c_str(),
                                             mapABInfo->playerCount,
                                             mapABInfo->adjustedPlayerCount
@@ -4779,7 +4783,7 @@ class AutoBalance_AllMapScript : public AllMapScript
                                 }
                                 else
                                 {
-                                    chatHandle.PSendSysMessage("%s left the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r",
+                                    chatHandle.PSendSysMessage("%s left the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r  Use '.dungeon players' to adjust.",
                                         player->GetName().c_str(),
                                         mapABInfo->playerCount,
                                         mapABInfo->adjustedPlayerCount
@@ -6661,8 +6665,16 @@ public:
         handler->PSendSysMessage("CC Duration multiplier: %.3f", targetABInfo->CCDurationMultiplier);
         handler->PSendSysMessage("XP multiplier: %.3f  Money multiplier: %.3f", targetABInfo->XPModifier, targetABInfo->MoneyModifier);
 
-        return true;
+        AutoBalanceMapInfo* mapABInfo = target->GetMap()->CustomData.GetDefault<AutoBalanceMapInfo>("AutoBalanceMapInfo");
+        float lootDropChanceMultiplier = 1.0f;
+        if (RewardScalingLoot == true)
+            lootDropChanceMultiplier = float(mapABInfo->adjustedPlayerCount) / float(target->GetMap()->ToInstanceMap()->GetMaxPlayers());
+        float lootDropChanceBoPMultiplier = 1.0f;
+        if (RewardScalingLootBOPAlwaysDropException == false)
+            lootDropChanceBoPMultiplier = lootDropChanceMultiplier;
+        handler->PSendSysMessage("BOE,BOP Loot chance multipliers: %.3f,%.3f", lootDropChanceMultiplier, lootDropChanceBoPMultiplier);
 
+        return true;
     }
 };
 
@@ -6708,9 +6720,44 @@ public:
             itr->GetSource()->AddItem(reward, 1 + difficulty); // difficulty boost
         }
     }
+
+    bool OnItemRoll(Player const* player, LootStoreItem const* lootStoreItem, float& chance, Loot& loot, LootStore const& lootStore) override
+    {
+        // Skip if not enabled
+        if (EnableGlobal == false)
+            return true;
+
+        // Nothing to do if not a dungeon
+        if (player->GetMap()->IsDungeon() == false)
+            return true;
+
+        // Nothing if there is no scaling loot at play
+        if (RewardScalingLoot == false)
+            return true;
+
+        // Always allow quest items
+        if (lootStoreItem->needs_quest == true)
+            return true;
+
+        // Skip if exception dungeon
+        if (isDungeonInDisabledDungeonIds(player->GetMap()->GetId()) == true)
+            return true;
+
+        ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(lootStoreItem->itemid);
+
+        // Always return the loot if it's a BOP drop and configured to do so
+        if (RewardScalingLootBOPAlwaysDropException == true && itemTemplate->Bonding == BIND_WHEN_PICKED_UP)
+            return true;
+
+        // Scale return
+        AutoBalanceMapInfo* mapABInfo = player->GetMap()->CustomData.GetDefault<AutoBalanceMapInfo>("AutoBalanceMapInfo");
+        uint32 randomPick = urand(1, player->GetMap()->ToInstanceMap()->GetMaxPlayers());
+        if (randomPick <= mapABInfo->adjustedPlayerCount)
+            return true;
+        else
+            return false;
+    };
 };
-
-
 
 void AddAutoBalanceScripts()
 {
