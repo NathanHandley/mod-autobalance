@@ -6744,6 +6744,10 @@ public:
 
         ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(lootStoreItem->itemid);
 
+        // Exit safely if the itemTemplate was not found
+        if (itemTemplate == NULL)
+            return true;
+
         // Always return the loot if it's a BOP drop and configured to do so
         if (RewardScalingLootBOPAlwaysDropException == true && itemTemplate->Bonding == BIND_WHEN_PICKED_UP)
             return true;
