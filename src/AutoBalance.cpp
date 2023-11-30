@@ -6478,7 +6478,7 @@ public:
         if (offset)
         {
             newOffset = (int32)atoi(offset);
-            if (newOffset <= newOffset == 0)
+            if (newOffset <= 0)
             {
                 handler->PSendSysMessage("Clearing Locked Player Difficulty for the current dungeon instance...", newOffset);
                 newOffset = 0;
