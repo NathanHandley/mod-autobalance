@@ -6478,15 +6478,15 @@ public:
         if (offset)
         {
             newOffset = (int32)atoi(offset);
-            if (newOffset == -1 || newOffset == 0)
+            if (newOffset <= newOffset == 0)
             {
                 handler->PSendSysMessage("Clearing Locked Player Difficulty for the current dungeon instance...", newOffset);
                 newOffset = 0;
             }
-            else if (newOffset > player->GetMap()->ToInstanceMap()->GetMaxPlayers())
+            else if ((uint32)newOffset > player->GetMap()->ToInstanceMap()->GetMaxPlayers())
             {
                 handler->PSendSysMessage("Passed number of players is higher than the map max players, so setting to %u", player->GetMap()->ToInstanceMap()->GetMaxPlayers());
-                newOffset = player->GetMap()->ToInstanceMap()->GetMaxPlayers();
+                newOffset = (int32)(player->GetMap()->ToInstanceMap()->GetMaxPlayers());
                 handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance.", newOffset);
             }
             else
@@ -6495,7 +6495,7 @@ public:
             }
 
             AutoBalanceMapInfo* mapABInfo = player->GetMap()->CustomData.GetDefault<AutoBalanceMapInfo>("AutoBalanceMapInfo");
-            mapABInfo->overridePlayerCount = newOffset;
+            mapABInfo->overridePlayerCount = (uint8)newOffset;
             mapABInfo->globalConfigTime = mapABInfo->globalConfigTime - 1;
 
             return true;
@@ -6720,7 +6720,7 @@ public:
         }
     }
 
-    bool OnItemRoll(Player const* player, LootStoreItem const* lootStoreItem, float& chance, Loot& loot, LootStore const& lootStore) override
+    bool OnItemRoll(Player const* player, LootStoreItem const* lootStoreItem, float& /*chance*/, Loot& /*loot*/, LootStore const& /*lootStore*/) override
     {
         // Skip if not enabled
         if (EnableGlobal == false)
