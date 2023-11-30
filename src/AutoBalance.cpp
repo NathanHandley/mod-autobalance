@@ -6594,7 +6594,6 @@ public:
                                     mapABInfo->activeCreatureCount,
                                     mapABInfo->allMapCreatures.size()
                                     );
-
             return true;
         }
         else
