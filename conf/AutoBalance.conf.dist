@@ -171,13 +171,13 @@ AutoBalance.MinPlayers.Heroic.PerInstance = ""
 
 ### 5-player dungeons
 AutoBalance.InflectionPoint=0.5
-AutoBalance.InflectionPoint.CurveFloor=0.1
+AutoBalance.InflectionPoint.CurveFloor=0.0
 AutoBalance.InflectionPoint.CurveCeiling=1.0
 AutoBalance.InflectionPoint.BossModifier=1.0
 
 ### 5-player heroic dungeons
 AutoBalance.InflectionPointHeroic=0.5
-AutoBalance.InflectionPointHeroic.CurveFloor=0.1
+AutoBalance.InflectionPointHeroic.CurveFloor=0.0
 AutoBalance.InflectionPointHeroic.CurveCeiling=1.0
 AutoBalance.InflectionPointHeroic.BossModifier=1.0
 
@@ -903,8 +903,27 @@ AutoBalance.RewardScaling.XP.Modifier = 1.0
 #        rewarded to each player, 1 gold 50 silver will be rewarded.
 #
 #        Default: 1.0 (no change)
-AutoBalance.RewardScaling.Money = 0
+AutoBalance.RewardScaling.Money = 1
 AutoBalance.RewardScaling.Money.Modifier = 1.0
+
+#
+#     AutoBalance.RewardScaling.Loot
+#        Scale Loot drop chance based on the number of players in the dungeon vs the max.  If set to 0, the full
+#        chance to drop will be at play.
+#        
+#        Example: 5 man dungeon with 3 player difficulty will have 60% drop chance (3/5)
+#
+#        Quest items will always drop with no regard to this setting
+#
+#        Default: 1 (1 = ON, 0 = OFF)
+#
+#     AutoBalance.RewardScaling.Loot.BOPAlwaysDropException
+#        If set to 1, BOP items will always drop (such as loot from most bosses)
+#
+#        Default: 1 (Always drop BOP items)
+#
+AutoBalance.RewardScaling.Loot = 1
+AutoBalance.RewardScaling.Loot.BOPAlwaysDropException = 1
 
 ##########################
 #
