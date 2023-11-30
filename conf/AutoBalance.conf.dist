@@ -170,14 +170,14 @@ AutoBalance.MinPlayers.Heroic.PerInstance = ""
 #     The "Final Multiplier" value is the actual multiplier that will be applied to enemies in a given dungeon.
 
 ### 5-player dungeons
-AutoBalance.InflectionPoint=0.56
-AutoBalance.InflectionPoint.CurveFloor=0.04
+AutoBalance.InflectionPoint=0.5
+AutoBalance.InflectionPoint.CurveFloor=0.0
 AutoBalance.InflectionPoint.CurveCeiling=1.0
 AutoBalance.InflectionPoint.BossModifier=1.0
 
 ### 5-player heroic dungeons
-AutoBalance.InflectionPointHeroic=0.56
-AutoBalance.InflectionPointHeroic.CurveFloor=0.04
+AutoBalance.InflectionPointHeroic=0.5
+AutoBalance.InflectionPointHeroic.CurveFloor=0.0
 AutoBalance.InflectionPointHeroic.CurveCeiling=1.0
 AutoBalance.InflectionPointHeroic.BossModifier=1.0
 
@@ -908,9 +908,11 @@ AutoBalance.RewardScaling.Money.Modifier = 1.0
 
 #
 #     AutoBalance.RewardScaling.Loot
-#        Scale Loot drop chance based on the health and damage modifiers on the creature.  If set to 0, the full
+#        Scale Loot drop chance based on the number of players in the dungeon vs the max.  If set to 0, the full
 #        chance to drop will be at play.
 #        
+#        Example: 5 man dungeon with 3 player difficulty will have 60% drop chance (3/5)
+#
 #        Quest items will always drop with no regard to this setting
 #
 #        Default: 1 (1 = ON, 0 = OFF)
@@ -919,6 +921,7 @@ AutoBalance.RewardScaling.Money.Modifier = 1.0
 #        If set to 1, BOP items will always drop (such as loot from most bosses)
 #
 #        Default: 1 (Always drop BOP items)
+#
 AutoBalance.RewardScaling.Loot = 1
 AutoBalance.RewardScaling.Loot.BOPAlwaysDropException = 1
 

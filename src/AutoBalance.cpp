@@ -6486,12 +6486,12 @@ public:
             else if (newOffset > player->GetMap()->ToInstanceMap()->GetMaxPlayers())
             {
                 handler->PSendSysMessage("Passed number of players is higher than the map max players, so setting to %u", player->GetMap()->ToInstanceMap()->GetMaxPlayers());
-                handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance, even if players join or leave...", newOffset);
                 newOffset = player->GetMap()->ToInstanceMap()->GetMaxPlayers();
+                handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance.", newOffset);
             }
             else
             {
-                handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance, even if players join or leave...", newOffset);
+                handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance.", newOffset);
             }
 
             AutoBalanceMapInfo* mapABInfo = player->GetMap()->CustomData.GetDefault<AutoBalanceMapInfo>("AutoBalanceMapInfo");
