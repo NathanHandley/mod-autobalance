@@ -6163,6 +6163,10 @@ public:
             );
         }
 
+        float xpAndMoneyBaseModifier = 1.0f;
+        if (mapABInfo->playerCount > 0 && mapABInfo->adjustedPlayerCount < map->ToInstanceMap()->GetMaxPlayers())
+            xpAndMoneyBaseModifier = (float)mapABInfo->adjustedPlayerCount / (float)map->ToInstanceMap()->GetMaxPlayers();
+
         // XP Scaling
         if (RewardScalingXP)
         {
@@ -6178,12 +6182,12 @@ public:
             }
             else if (RewardScalingMethod == AUTOBALANCE_SCALING_DYNAMIC)
             {
-                creatureABInfo->XPModifier = avgHealthDamageMultipliers * RewardScalingXPModifier;
-                LOG_DEBUG("module.AutoBalance_StatGeneration", "AutoBalance_AllCreatureScript::ModifyCreatureAttributes: Creature {} ({}) | Dynamic Mode: XPModifier ({}) = avgHealthDamageMultipliers ({}) * RewardScalingXPModifier ({})",
+                creatureABInfo->XPModifier = xpAndMoneyBaseModifier * RewardScalingXPModifier;
+                LOG_DEBUG("module.AutoBalance_StatGeneration", "AutoBalance_AllCreatureScript::ModifyCreatureAttributes: Creature {} ({}) | Dynamic Mode: XPModifier ({}) = xpAndMoneyBaseModifier ({}) * RewardScalingXPModifier ({})",
                             creature->GetName(),
                             creatureABInfo->selectedLevel,
                             creatureABInfo->XPModifier,
-                            avgHealthDamageMultipliers,
+                            xpAndMoneyBaseModifier,
                             RewardScalingXPModifier
                 );
             }
@@ -6205,12 +6209,12 @@ public:
             }
             else if (RewardScalingMethod == AUTOBALANCE_SCALING_DYNAMIC)
             {
-                creatureABInfo->MoneyModifier = avgHealthDamageMultipliers * RewardScalingMoneyModifier;
-                LOG_DEBUG("module.AutoBalance_StatGeneration", "AutoBalance_AllCreatureScript::ModifyCreatureAttributes: Creature {} ({}) | Dynamic Mode: MoneyModifier ({}) = avgHealthDamageMultipliers ({}) * RewardScalingMoneyModifier ({})",
+                creatureABInfo->MoneyModifier = xpAndMoneyBaseModifier * RewardScalingMoneyModifier;
+                LOG_DEBUG("module.AutoBalance_StatGeneration", "AutoBalance_AllCreatureScript::ModifyCreatureAttributes: Creature {} ({}) | Dynamic Mode: MoneyModifier ({}) = xpAndMoneyBaseModifier ({}) * RewardScalingMoneyModifier ({})",
                             creature->GetName(),
                             creatureABInfo->selectedLevel,
                             creatureABInfo->MoneyModifier,
-                            avgHealthDamageMultipliers,
+                            xpAndMoneyBaseModifier,
                             RewardScalingMoneyModifier
                 );
             }
