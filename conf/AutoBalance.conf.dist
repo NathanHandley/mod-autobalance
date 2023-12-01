@@ -170,14 +170,14 @@ AutoBalance.MinPlayers.Heroic.PerInstance = ""
 #     The "Final Multiplier" value is the actual multiplier that will be applied to enemies in a given dungeon.
 
 ### 5-player dungeons
-AutoBalance.InflectionPoint=0.5
-AutoBalance.InflectionPoint.CurveFloor=0.0
+AutoBalance.InflectionPoint=0.7
+AutoBalance.InflectionPoint.CurveFloor=0.1
 AutoBalance.InflectionPoint.CurveCeiling=1.0
 AutoBalance.InflectionPoint.BossModifier=1.0
 
 ### 5-player heroic dungeons
-AutoBalance.InflectionPointHeroic=0.5
-AutoBalance.InflectionPointHeroic.CurveFloor=0.0
+AutoBalance.InflectionPointHeroic=0.7
+AutoBalance.InflectionPointHeroic.CurveFloor=0.1
 AutoBalance.InflectionPointHeroic.CurveCeiling=1.0
 AutoBalance.InflectionPointHeroic.BossModifier=1.0
 
