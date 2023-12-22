@@ -704,7 +704,8 @@ AutoBalance.ForcedID2=""
 # 33062,33060,33109 = Ulduar Flame Leviathan Encounter 
 # 27692,27755,27756 = Oculus Dragons
 # 30161,30248 = Eye of Eternity
-AutoBalance.DisabledID="36838,36839,33062,33060,33109,30161,30248"
+# 35644,36558 = Trial of the Champion
+AutoBalance.DisabledID="36838,36839,33062,33060,33109,30161,30248,35644,36558"
 
 ##########################
 #
