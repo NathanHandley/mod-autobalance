@@ -700,7 +700,7 @@ AutoBalance.ForcedID2=""
 #     AutoBalance.DisabledID
 #        Disable scaling on specific creatures
 #
-AutoBalance.DisabledID=""
+AutoBalance.DisabledID="36838,36839"
 
 ##########################
 #
