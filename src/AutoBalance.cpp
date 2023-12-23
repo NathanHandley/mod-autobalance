@@ -353,6 +353,7 @@ static bool RewardScalingXP, RewardScalingMoney;
 static float RewardScalingXPModifier, RewardScalingMoneyModifier;
 static bool RewardScalingLoot, RewardScalingLootBOPAlwaysDropException;
 static std::list<uint32> RewardScalingExceptionItemIDs;
+static bool RewardScalingExemptContainers;
 
 // Track the initial config time
 static uint64_t globalConfigTime = GetCurrentConfigTime();
@@ -3473,6 +3474,7 @@ class AutoBalance_WorldScript : public WorldScript
 
         RewardScalingLoot = sConfigMgr->GetOption<bool>("AutoBalance.RewardScaling.Loot", true);
         RewardScalingLootBOPAlwaysDropException = sConfigMgr->GetOption<bool>("AutoBalance.RewardScaling.Loot.BOPAlwaysDropException", true);
+        RewardScalingExemptContainers = sConfigMgr->GetOption<bool>("AutoBalance.RewardScaling.Loot.ExemptContainers", true);
 
         // Announcement
         Announcement = sConfigMgr->GetOption<bool>("AutoBalanceAnnounce.enable", true);
@@ -6677,7 +6679,7 @@ public:
         float lootDropChanceBoPMultiplier = 1.0f;
         if (RewardScalingLootBOPAlwaysDropException == false)
             lootDropChanceBoPMultiplier = lootDropChanceMultiplier;
-        handler->PSendSysMessage("BOE,BOP Loot chance multipliers: %.3f,%.3f", lootDropChanceMultiplier, lootDropChanceBoPMultiplier);
+        handler->PSendSysMessage("Non-BOP,BOP Loot chance multipliers: %.3f,%.3f", lootDropChanceMultiplier, lootDropChanceBoPMultiplier);
 
         return true;
     }
@@ -6726,7 +6728,7 @@ public:
         }
     }
 
-    bool OnItemRoll(Player const* player, LootStoreItem const* lootStoreItem, float& /*chance*/, Loot& /*loot*/, LootStore const& /*lootStore*/) override
+    bool OnItemRoll(Player const* player, LootStoreItem const* lootStoreItem, float& /*chance*/, Loot& loot, LootStore const& /*lootStore*/) override
     {
         // Skip if not enabled
         if (EnableGlobal == false)
@@ -6754,13 +6756,18 @@ public:
         if (itemTemplate == NULL)
             return true;
 
+        // Always return the loot if it's a BOP drop and configured to do so
+        if (RewardScalingLootBOPAlwaysDropException == true && itemTemplate->Bonding == BIND_WHEN_PICKED_UP)
+            return true;
+
         // Skip if exception itemID
         if (isIntInList(RewardScalingExceptionItemIDs, itemTemplate->ItemId) == true)
             return true;
 
-        // Always return the loot if it's a BOP drop and configured to do so
-        if (RewardScalingLootBOPAlwaysDropException == true && itemTemplate->Bonding == BIND_WHEN_PICKED_UP)
-            return true;
+        // Don't scale items from chests or gather points
+        if (RewardScalingExemptContainers == true)
+            if (loot.sourceGameObject && (loot.sourceGameObject->GetGoType() == GAMEOBJECT_TYPE_CHEST || loot.sourceGameObject->GetGoType() == GAMEOBJECT_TYPE_FISHINGNODE))
+                return true;
 
         // Scale return
         AutoBalanceMapInfo* mapABInfo = player->GetMap()->CustomData.GetDefault<AutoBalanceMapInfo>("AutoBalanceMapInfo");
