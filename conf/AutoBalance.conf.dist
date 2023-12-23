@@ -921,8 +921,28 @@ AutoBalance.RewardScaling.Money.Modifier = 1.0
 #
 #        Default: 1 (Always drop BOP items)
 #
+#     AutoBalance.RewardScaling.Loot.ExceptionItemIDs
+#        Any values put in this list will not be subjected to the scaled drop rates, separated by commas
+#
+#        Defaults: (See below)
+#        - 8444 Executioner's Key
+#        - 11078 Relic Coffer Key
+#		 - 11197 Dark Keeper Key
+#        - 11885 Shadowforge Torch
+#		 - 13302 Market Row Postbox Key
+#		 - 13303 Crusaders' Square Postbox Key
+#		 - 13304 Festival Lane Postbox Key
+#		 - 13305 Elders' Square Postbox Key
+#		 - 13306 King's Square Postbox Key
+#		 - 13307 Ezra Grimm's Postbox Key
+#		 - 21761 Scarab Coffer Key
+#		 - 21762 Greater Scarab Coffer Key
+#		 - 30436 Jagged Blue Crystal
+#		 - 30437 Jagged Red Crystal
+#
 AutoBalance.RewardScaling.Loot = 1
 AutoBalance.RewardScaling.Loot.BOPAlwaysDropException = 1
+AutoBalance.RewardScaling.Loot.ExceptionItemIDs = 8444, 11078, 11197, 11885, 13302, 13303, 13304, 13305, 13306, 13307, 21761, 21762, 30436, 30437
 
 ##########################
 #

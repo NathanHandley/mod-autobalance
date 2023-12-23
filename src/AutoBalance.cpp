@@ -352,6 +352,7 @@ static ScalingMethod RewardScalingMethod;
 static bool RewardScalingXP, RewardScalingMoney;
 static float RewardScalingXPModifier, RewardScalingMoneyModifier;
 static bool RewardScalingLoot, RewardScalingLootBOPAlwaysDropException;
+static std::list<uint32> RewardScalingExceptionItemIDs;
 
 // Track the initial config time
 static uint64_t globalConfigTime = GetCurrentConfigTime();
@@ -404,23 +405,23 @@ static float StatModifierRaid25M_Boss_Global, StatModifierRaid25M_Boss_Health, S
 static float StatModifierRaid25MHeroic_Boss_Global, StatModifierRaid25MHeroic_Boss_Health, StatModifierRaid25MHeroic_Boss_Mana, StatModifierRaid25MHeroic_Boss_Armor, StatModifierRaid25MHeroic_Boss_Damage, StatModifierRaid25MHeroic_Boss_CCDuration;
 static float StatModifierRaid40M_Boss_Global, StatModifierRaid40M_Boss_Health, StatModifierRaid40M_Boss_Mana, StatModifierRaid40M_Boss_Armor, StatModifierRaid40M_Boss_Damage, StatModifierRaid40M_Boss_CCDuration;
 
-std::list<uint32> LoadDisabledDungeons(std::string dungeonIdString) // Used for reading the string from the configuration file for selectively disabling dungeons
+std::list<uint32> ParseIntsFromString(std::string inputString) // Used when parsing strings that have comma delimited ints
 {
     std::string delimitedValue;
-    std::stringstream dungeonIdStream;
-    std::list<uint32> dungeonIdList;
+    std::stringstream intStringStream;
+    std::list<uint32> returnIntList;
 
-    dungeonIdStream.str(dungeonIdString);
-    while (std::getline(dungeonIdStream, delimitedValue, ',')) // Process each dungeon ID in the string, delimited by the comma - ","
+    intStringStream.str(inputString);
+    while (std::getline(intStringStream, delimitedValue, ',')) // Process each int in the string, delimited by the comma - ","
     {
         std::string valueOne;
-        std::stringstream dungeonPairStream(delimitedValue);
-        dungeonPairStream>>valueOne;
-        auto dungeonMapId = atoi(valueOne.c_str());
-        dungeonIdList.push_back(dungeonMapId);
+        std::stringstream intStream(delimitedValue);
+        intStream >>valueOne;
+        auto intValue = atoi(valueOne.c_str());
+        returnIntList.push_back(intValue);
     }
 
-    return dungeonIdList;
+    return returnIntList;
 }
 
 std::map<uint32, uint8> LoadMinPlayersPerDungeonId(std::string minPlayersString) // Used for reading the string from the configuration file for per-dungeon minimum player count overrides
@@ -567,9 +568,9 @@ std::map<uint32, uint32> LoadDistanceCheckOverrides(std::string dungeonIdString)
     return overrideMap;
 }
 
-bool isDungeonInDisabledDungeonIds(uint32 dungeonId)
+bool isIntInList(std::list<uint32> intList, uint32 intValue)
 {
-    return (std::find(disabledDungeonIds.begin(), disabledDungeonIds.end(), dungeonId) != disabledDungeonIds.end());
+    return (std::find(intList.begin(), intList.end(), intValue) != intList.end());
 }
 
 bool isDungeonInMinPlayerMap(uint32 dungeonId, bool isHeroic)
@@ -658,7 +659,7 @@ bool ShouldMapBeEnabled(Map* map)
         }
 
         // if the Dungeon is disabled via configuration, do not enable it
-        if (isDungeonInDisabledDungeonIds(map->GetId()))
+        if (isIntInList(disabledDungeonIds, map->GetId()))
         {
             LOG_DEBUG("module.AutoBalance", "AutoBalance::ShouldMapBeEnabled: {} ({}{}, {}-player {}) - Not enabled because the map ID is disabled via configuration.",
                       map->GetMapName(),
@@ -3067,7 +3068,7 @@ class AutoBalance_WorldScript : public WorldScript
         LoadForcedCreatureIdsFromString(sConfigMgr->GetOption<std::string>("AutoBalance.DisabledID", ""), 0);
 
         // Disabled Dungeon IDs
-        disabledDungeonIds = LoadDisabledDungeons(sConfigMgr->GetOption<std::string>("AutoBalance.Disable.PerInstance", ""));
+        disabledDungeonIds = ParseIntsFromString(sConfigMgr->GetOption<std::string>("AutoBalance.Disable.PerInstance", ""));
 
         // Min Players
         minPlayersNormal = sConfigMgr->GetOption<int>("AutoBalance.MinPlayers", 1);
@@ -3447,6 +3448,7 @@ class AutoBalance_WorldScript : public WorldScript
             LOG_WARN("server.loading", "mod-autobalance: deprecated value `AutoBalance.DungeonScaleDownXP` defined in `AutoBalance.conf`. This variable will be removed in a future release. Please see `AutoBalance.conf.dist` for more details.");
         if (sConfigMgr->GetOption<float>("AutoBalance.DungeonScaleDownMoney", false, false))
             LOG_WARN("server.loading", "mod-autobalance: deprecated value `AutoBalance.DungeonScaleDownMoney` defined in `AutoBalance.conf`. This variable will be removed in a future release. Please see `AutoBalance.conf.dist` for more details.");
+        RewardScalingExceptionItemIDs = ParseIntsFromString(sConfigMgr->GetOption<std::string>("AutoBalance.RewardScaling.Loot.ExceptionItemIDs", ""));
 
         std::string RewardScalingMethodString = sConfigMgr->GetOption<std::string>("AutoBalance.RewardScaling.Method", "dynamic", false);
         if (RewardScalingMethodString == "fixed")
@@ -6743,13 +6745,17 @@ public:
             return true;
 
         // Skip if exception dungeon
-        if (isDungeonInDisabledDungeonIds(player->GetMap()->GetId()) == true)
+        if (isIntInList(disabledDungeonIds, player->GetMap()->GetId()) == true)
             return true;
 
         ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(lootStoreItem->itemid);
 
         // Exit safely if the itemTemplate was not found
         if (itemTemplate == NULL)
+            return true;
+
+        // Skip if exception itemID
+        if (isIntInList(RewardScalingExceptionItemIDs, itemTemplate->ItemId) == true)
             return true;
 
         // Always return the loot if it's a BOP drop and configured to do so
