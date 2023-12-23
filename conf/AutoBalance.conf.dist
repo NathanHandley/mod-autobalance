@@ -922,7 +922,12 @@ AutoBalance.RewardScaling.Money.Modifier = 1.0
 #        Default: 1 (Always drop BOP items)
 #
 #     AutoBalance.RewardScaling.Loot.ExemptContainers
-#        If set to 1, Items from containers (chests, gathering points, etc) will always yield
+#        If set to 1, Items from containers (chests, gathering points like mining/herb/fishing nodes, etc) will always yield
+#
+#        Default: 1 (Always)
+#
+#     AutoBalance.RewardScaling.Loot.ExemptSkinning
+#        If set to 1, rewards from skinning are exempt from drop scaling
 #
 #        Default: 1 (Always)
 #
@@ -949,6 +954,7 @@ AutoBalance.RewardScaling.Money.Modifier = 1.0
 AutoBalance.RewardScaling.Loot = 1
 AutoBalance.RewardScaling.Loot.BOPAlwaysDropException = 1
 AutoBalance.RewardScaling.Loot.ExemptContainers = 1
+AutoBalance.RewardScaling.Loot.ExemptSkinning = 1
 AutoBalance.RewardScaling.Loot.ExceptionItemIDs = 8444, 11078, 11197, 11602, 11885, 13302, 13303, 13304, 13305, 13306, 13307, 21761, 21762, 30436, 30437
 
 ##########################

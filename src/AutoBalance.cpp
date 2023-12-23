@@ -354,6 +354,7 @@ static float RewardScalingXPModifier, RewardScalingMoneyModifier;
 static bool RewardScalingLoot, RewardScalingLootBOPAlwaysDropException;
 static std::list<uint32> RewardScalingExceptionItemIDs;
 static bool RewardScalingExemptContainers;
+static bool RewardScalingExemptSkinning;
 
 // Track the initial config time
 static uint64_t globalConfigTime = GetCurrentConfigTime();
@@ -3475,6 +3476,7 @@ class AutoBalance_WorldScript : public WorldScript
         RewardScalingLoot = sConfigMgr->GetOption<bool>("AutoBalance.RewardScaling.Loot", true);
         RewardScalingLootBOPAlwaysDropException = sConfigMgr->GetOption<bool>("AutoBalance.RewardScaling.Loot.BOPAlwaysDropException", true);
         RewardScalingExemptContainers = sConfigMgr->GetOption<bool>("AutoBalance.RewardScaling.Loot.ExemptContainers", true);
+        RewardScalingExemptSkinning = sConfigMgr->GetOption<bool>("AutoBalance.RewardScaling.Loot.ExemptSkinning", true);
 
         // Announcement
         Announcement = sConfigMgr->GetOption<bool>("AutoBalanceAnnounce.enable", true);
@@ -6764,9 +6766,14 @@ public:
         if (isIntInList(RewardScalingExceptionItemIDs, itemTemplate->ItemId) == true)
             return true;
 
-        // Don't scale items from chests or gather points
+        // If exempted, don't scale items from chests or gather points
         if (RewardScalingExemptContainers == true)
             if (loot.sourceGameObject && (loot.sourceGameObject->GetGoType() == GAMEOBJECT_TYPE_CHEST || loot.sourceGameObject->GetGoType() == GAMEOBJECT_TYPE_FISHINGNODE))
+                return true;
+
+        // If exempted, don't scale items from skinning
+        if (RewardScalingExemptSkinning == true)
+            if (itemTemplate->Class == ITEM_CLASS_TRADE_GOODS && itemTemplate->SubClass == ITEM_SUBCLASS_LEATHER)
                 return true;
 
         // Scale return
