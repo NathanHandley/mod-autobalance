@@ -5260,6 +5260,41 @@ public:
             return;
         }
 
+        CreatureTemplate const* creatureTemplate = creature->GetCreatureTemplate();
+
+        // Add special rules for the ICC gunship
+        // TODO: Handle this better
+        switch (creatureTemplate->Entry)
+        {
+        case 36838: // Alliance Gunship Cannon
+        case 36839: // Horde Gunship Cannon
+        {
+            creatureABInfo->selectedLevel = creatureABInfo->UnmodifiedLevel;
+            return;
+        }
+        case 37540: // The Skybreaker
+        {
+            Player* firstPlayer = mapABInfo->allMapPlayers[0];
+            FactionTemplateEntry const* u_entry = sFactionTemplateStore.LookupEntry(firstPlayer->GetFaction());
+            if (u_entry && u_entry->ourMask & FACTION_MASK_ALLIANCE)
+            {
+                creatureABInfo->selectedLevel = creatureABInfo->UnmodifiedLevel;
+                return;
+            }
+        }
+        case 37215: // Orgrim's Hammer
+        {
+            Player* firstPlayer = mapABInfo->allMapPlayers[0];
+            FactionTemplateEntry const* u_entry = sFactionTemplateStore.LookupEntry(firstPlayer->GetFaction());
+            if (u_entry && u_entry->ourMask & FACTION_MASK_HORDE)
+            {
+                creatureABInfo->selectedLevel = creatureABInfo->UnmodifiedLevel;
+                return;
+            }
+        }
+        default: break;
+        }
+
         // if the creature isn't relevant, don't modify it
         if (!isCreatureRelevant(creature))
         {
@@ -5315,8 +5350,6 @@ public:
             LOG_DEBUG("module.AutoBalance", "AutoBalance_AllCreatureScript::ModifyCreatureAttributes: Creature {} ({}) | is dead, do not modify.", creature->GetName(), creatureABInfo->UnmodifiedLevel);
             return;
         }
-
-        CreatureTemplate const *creatureTemplate = creature->GetCreatureTemplate();
 
         // check to see if the creature is in the forced num players list
         uint32 forcedNumPlayers = GetForcedNumPlayers(creatureTemplate->Entry);
