@@ -4082,6 +4082,15 @@ class AutoBalance_UnitScript : public UnitScript
                 return amount;
             }
 
+            // If the source is a non-charmed player AND the value is healing (positive), just use original amount
+            if (source->GetTypeId() == TYPEID_PLAYER && amount >= 0 && source->IsCharmed() == false)
+            {
+                if (_debug_damage_and_healing)
+                    LOG_DEBUG("module.AutoBalance_DamageHealingCC", "AutoBalance_UnitScript::_Modify_Damage_Healing: Source is a non-charmed player healing a unit target, returning original value of ({}).", amount);
+
+                return amount;
+            }
+
             //
             // Multiplier calculation
             //
@@ -5262,7 +5271,7 @@ public:
 
         CreatureTemplate const* creatureTemplate = creature->GetCreatureTemplate();
 
-        // Add special rules for the ICC gunship
+        // Add special rules for the ICC 
         // TODO: Handle this better
         switch (creatureTemplate->Entry)
         {
