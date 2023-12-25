@@ -3993,6 +3993,12 @@ class AutoBalance_UnitScript : public UnitScript
                 return amount;
             }
 
+            // Any healing on a player should not be scaled
+            if (amount >= 0 && target->GetTypeId() == TYPEID_PLAYER)
+            {
+                return amount;
+            }
+
             // get the maps' info
             AutoBalanceMapInfo *sourceMapABInfo = source->GetMap()->CustomData.GetDefault<AutoBalanceMapInfo>("AutoBalanceMapInfo");
             AutoBalanceMapInfo *targetMapABInfo = target->GetMap()->CustomData.GetDefault<AutoBalanceMapInfo>("AutoBalanceMapInfo");
@@ -4078,15 +4084,6 @@ class AutoBalance_UnitScript : public UnitScript
             {
                 if (_debug_damage_and_healing)
                     LOG_DEBUG("module.AutoBalance_DamageHealingCC", "AutoBalance_UnitScript::_Modify_Damage_Healing: Source is a player-controlled pet or summon, returning original value of ({}).", amount);
-
-                return amount;
-            }
-
-            // If the source is a non-charmed player AND the value is healing (positive), just use original amount
-            if (source->GetTypeId() == TYPEID_PLAYER && amount >= 0 && source->IsCharmed() == false)
-            {
-                if (_debug_damage_and_healing)
-                    LOG_DEBUG("module.AutoBalance_DamageHealingCC", "AutoBalance_UnitScript::_Modify_Damage_Healing: Source is a non-charmed player healing a unit target, returning original value of ({}).", amount);
 
                 return amount;
             }
