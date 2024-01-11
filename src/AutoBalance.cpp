@@ -3034,6 +3034,20 @@ int GetForcedNumPlayers(int creatureId)
     return forcedCreatureIds[creatureId];
 }
 
+void SendMessageToDungeonPlayersExceptPlayer(Player* player, std::string message)
+{
+    if (player->GetMap()->IsDungeon() == false)
+        return;
+
+    for (auto& curPlayer : player->GetMap()->GetPlayers())
+    {
+        if (curPlayer.GetSource()->GetGUID().GetCounter() != player->GetGUID().GetCounter())
+        {
+            ChatHandler(curPlayer.GetSource()->GetSession()).PSendSysMessage(message.c_str());
+        }
+    }
+}
+
 class AutoBalance_WorldScript : public WorldScript
 {
     public:
@@ -6512,14 +6526,14 @@ public:
         {
             handler->PSendSysMessage(".dungeon players #");
             handler->PSendSysMessage("Sets the locked Player Difficulty for the current instance, or 0 or -1 to clear.  Example: '.dungeon players 2' = 2 player difficulty.");
-            return false;
+            return true;
         }
 
         Player* player = handler->GetPlayer();
         if (player->GetMap()->IsDungeon() == false)
         {
             handler->PSendSysMessage("This command can only be used in a dungeon or raid.");
-            return false;
+            return true;
         }
 
         char* offset = strtok((char*)args, " ");
@@ -6529,18 +6543,25 @@ public:
             newOffset = (int32)atoi(offset);
             if (newOffset <= 0)
             {
-                handler->PSendSysMessage("Clearing Locked Player Difficulty for the current dungeon instance...", newOffset);
+                handler->PSendSysMessage("Clearing Locked Player Difficulty for the current dungeon instance.", newOffset);
                 newOffset = 0;
+                std::string dungeonMessage = "Dungeon difficulty no longer player locked (" + player->GetName() + ")";
+                SendMessageToDungeonPlayersExceptPlayer(player, dungeonMessage.c_str());
             }
             else if ((uint32)newOffset > player->GetMap()->ToInstanceMap()->GetMaxPlayers())
             {
                 handler->PSendSysMessage("Passed number of players is higher than the map max players, so setting to %u", player->GetMap()->ToInstanceMap()->GetMaxPlayers());
                 newOffset = (int32)(player->GetMap()->ToInstanceMap()->GetMaxPlayers());
                 handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance.", newOffset);
+
+                std::string dungeonMessage = "Dungeon difficulty set (and locked) to '" + std::to_string(newOffset) + "' players by " + player->GetName();
+                SendMessageToDungeonPlayersExceptPlayer(player, dungeonMessage.c_str());
             }
             else
             {
                 handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance.", newOffset);
+                std::string dungeonMessage = "Dungeon difficulty set (and locked) to '" + std::to_string(newOffset) + "' players by " + player->GetName();
+                SendMessageToDungeonPlayersExceptPlayer(player, dungeonMessage.c_str());
             }
 
             AutoBalanceMapInfo* mapABInfo = player->GetMap()->CustomData.GetDefault<AutoBalanceMapInfo>("AutoBalanceMapInfo");
@@ -6552,7 +6573,7 @@ public:
         else
         {
             handler->PSendSysMessage("Error changing Player Difficulty! (Was a number of players provided?)");
-            return false;
+            return true;
         }
     }
 
@@ -6648,7 +6669,7 @@ public:
         else
         {
             handler->PSendSysMessage("This command can only be used in a dungeon or raid.");
-            return false;
+            return true;
         }
     }
 
@@ -6660,13 +6681,13 @@ public:
         {
             handler->SendSysMessage(LANG_SELECT_CREATURE);
             handler->SetSentErrorMessage(true);
-            return false;
+            return true;
         }
         else if (!target->GetMap()->IsDungeon())
         {
             handler->PSendSysMessage("That target is not in an instance.");
             handler->SetSentErrorMessage(true);
-            return false;
+            return true;
         }
 
         AutoBalanceCreatureInfo *targetABInfo=target->CustomData.GetDefault<AutoBalanceCreatureInfo>("AutoBalanceCreatureInfo");
