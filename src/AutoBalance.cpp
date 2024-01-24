@@ -6814,12 +6814,12 @@ public:
 
         ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(lootStoreItem->itemid);
 
-        // Enchanting materials not subjected to item scaling
-        if (itemTemplate->Class == ITEM_CLASS_TRADE_GOODS && itemTemplate->SubClass == ITEM_SUBCLASS_ENCHANTING)
-            return true;
-
         // Exit safely if the itemTemplate was not found
         if (itemTemplate == NULL)
+            return true;
+
+        // Enchanting materials not subjected to item scaling
+        if (itemTemplate->Class == ITEM_CLASS_TRADE_GOODS && itemTemplate->SubClass == ITEM_SUBCLASS_ENCHANTING)
             return true;
 
         // Always return the loot if it's a BOP drop and configured to do so
