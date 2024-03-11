@@ -5286,12 +5286,6 @@ public:
         // TODO: Handle this better
         switch (creatureTemplate->Entry)
         {
-        case 36838: // Alliance Gunship Cannon
-        case 36839: // Horde Gunship Cannon
-        {
-            creatureABInfo->selectedLevel = creatureABInfo->UnmodifiedLevel;
-            return;
-        }
         case 37540: // The Skybreaker
         {
             Player* firstPlayer = mapABInfo->allMapPlayers[0];
@@ -5377,6 +5371,7 @@ public:
         if (forcedNumPlayers == 0)
         {
             LOG_DEBUG("module.AutoBalance", "AutoBalance_AllCreatureScript::ModifyCreatureAttributes: Creature {} ({}) | is in the forced num players list with a value of 0, not changed.", creature->GetName(), creatureABInfo->UnmodifiedLevel);
+            creatureABInfo->selectedLevel = creatureABInfo->UnmodifiedLevel;
             return; // forcedNumPlayers 0 means that the creature is contained in DisabledID -> no scaling
         }
 
