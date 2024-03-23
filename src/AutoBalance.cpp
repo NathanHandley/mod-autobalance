@@ -6817,6 +6817,10 @@ public:
         if (itemTemplate->Class == ITEM_CLASS_TRADE_GOODS && itemTemplate->SubClass == ITEM_SUBCLASS_ENCHANTING)
             return true;
 
+        // Duration (items that expire) are always exempted
+        if (itemTemplate->Duration > 0)
+            return true;
+
         // Always return the loot if it's a BOP drop and configured to do so
         if (RewardScalingLootBOPAlwaysDropException == true && itemTemplate->Bonding == BIND_WHEN_PICKED_UP)
             return true;
