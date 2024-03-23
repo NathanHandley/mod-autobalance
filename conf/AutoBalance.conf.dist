@@ -700,12 +700,13 @@ AutoBalance.ForcedID2=""
 #     AutoBalance.DisabledID
 #        Disable scaling on specific creatures
 #
-# 33062,33060,33109 = Ulduar Flame Leviathan Encounter 
+# 26499 = Arthas (Culling of Stratholme)
 # 27692,27755,27756 = Oculus Dragons
+# 33062,33060,33109 = Ulduar Flame Leviathan Encounter 
 # 30161,30248 = Eye of Eternity
 # 35644,36558 = Trial of the Champion
 # 36838,36839 = ICC Gunship Cannons
-AutoBalance.DisabledID="33062,33060,33109,30161,30248,35644,36558,36838,36839"
+AutoBalance.DisabledID="26499,27692,27755,27756,33062,33060,33109,30161,30248,35644,36558,36838,36839"
 
 ##########################
 #
