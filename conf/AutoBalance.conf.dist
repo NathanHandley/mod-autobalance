@@ -953,6 +953,8 @@ AutoBalance.RewardScaling.Money.Modifier = 1.0
 #		 - 30437 Jagged Red Crystal
 #		 - 31088 Tainted Core
 #		 - 37372 Harpoon (Utguard Pinnacle)
+#		 - 43151 Loken's Tongue
+#		 - 43158 Drakkari Colossus Fragment
 #		 - 49351 Perfume Neutralizer - Comes from 49631
 #		 - 49352 Cologne Neutralizer - Comes from 49631
 #		 - 49635 Court Subpoena - Comes from 49631
@@ -961,7 +963,7 @@ AutoBalance.RewardScaling.Loot = 1
 AutoBalance.RewardScaling.Loot.BOPAlwaysDropException = 1
 AutoBalance.RewardScaling.Loot.ExemptContainers = 1
 AutoBalance.RewardScaling.Loot.ExemptSkinning = 1
-AutoBalance.RewardScaling.Loot.ExceptionItemIDs = 8444, 11078, 11197, 11602, 11885, 13302, 13303, 13304, 13305, 13306, 13307, 21761, 21762, 30436, 30437, 31088, 37372, 49351, 49352, 49635
+AutoBalance.RewardScaling.Loot.ExceptionItemIDs = 8444, 11078, 11197, 11602, 11885, 13302, 13303, 13304, 13305, 13306, 13307, 21761, 21762, 30436, 30437, 31088, 37372, 43151, 43158, 49351, 49352, 49635
 
 ##########################
 #
