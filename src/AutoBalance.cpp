@@ -4673,7 +4673,7 @@ class AutoBalance_AllMapScript : public AllMapScript
 
                                 if (thisPlayer && thisPlayer == player) // This is the player that entered
                                 {
-                                    chatHandle.PSendSysMessage("There are %u player(s) in this instance. Difficulty is set to %u player(s).|r Use '.dungeon setplayers' to adjust.",
+                                    chatHandle.PSendSysMessage("There are {} player(s) in this instance. Difficulty is set to {} player(s).|r Use '.dungeon setplayers' to adjust.",
                                         mapABInfo->playerCount,
                                         mapABInfo->adjustedPlayerCount
                                     );
@@ -4689,7 +4689,7 @@ class AutoBalance_AllMapScript : public AllMapScript
                                     // announce non-GMs entering the instance only
                                     if (!player->IsGameMaster())
                                     {
-                                        chatHandle.PSendSysMessage("%s enters the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r  Use '.dungeon setplayers' to adjust.",
+                                        chatHandle.PSendSysMessage("{} enters the instance. There are {} player(s) in this instance. Difficulty is set to {} player(s).|r  Use '.dungeon setplayers' to adjust.",
                                             player->GetName().c_str(),
                                             mapABInfo->playerCount,
                                             mapABInfo->adjustedPlayerCount
@@ -4802,14 +4802,14 @@ class AutoBalance_AllMapScript : public AllMapScript
 
                                 if (mapABInfo->combatLocked)
                                 {
-                                    chatHandle.PSendSysMessage("%s left the instance while combat was in progress. Difficulty locked to no less than %u players until combat ends.|r",
+                                    chatHandle.PSendSysMessage("{} left the instance while combat was in progress. Difficulty locked to no less than {} players until combat ends.|r",
                                         player->GetName().c_str(),
                                         mapABInfo->adjustedPlayerCount
                                     );
                                 }
                                 else
                                 {
-                                    chatHandle.PSendSysMessage("%s left the instance. There are %u player(s) in this instance. Difficulty is set to %u player(s).|r  Use '.dungeon setplayers' to adjust.",
+                                    chatHandle.PSendSysMessage("{} left the instance. There are {} player(s) in this instance. Difficulty is set to {} player(s).|r  Use '.dungeon setplayers' to adjust.",
                                         player->GetName().c_str(),
                                         mapABInfo->playerCount,
                                         mapABInfo->adjustedPlayerCount
@@ -6545,16 +6545,16 @@ public:
             }
             else if ((uint32)newOffset > player->GetMap()->ToInstanceMap()->GetMaxPlayers())
             {
-                handler->PSendSysMessage("Passed number of players is higher than the map max players, so setting to %u", player->GetMap()->ToInstanceMap()->GetMaxPlayers());
+                handler->PSendSysMessage("Passed number of players is higher than the map max players, so setting to {}", player->GetMap()->ToInstanceMap()->GetMaxPlayers());
                 newOffset = (int32)(player->GetMap()->ToInstanceMap()->GetMaxPlayers());
-                handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance.", newOffset);
+                handler->PSendSysMessage("Locking Player Difficulty to {} for the current dungeon instance.", newOffset);
 
                 std::string dungeonMessage = "Dungeon difficulty set (and locked) to '" + std::to_string(newOffset) + "' players by " + player->GetName();
                 SendMessageToDungeonPlayersExceptPlayer(player, dungeonMessage.c_str());
             }
             else
             {
-                handler->PSendSysMessage("Locking Player Difficulty to %i for the current dungeon instance.", newOffset);
+                handler->PSendSysMessage("Locking Player Difficulty to {} for the current dungeon instance.", newOffset);
                 std::string dungeonMessage = "Dungeon difficulty set (and locked) to '" + std::to_string(newOffset) + "' players by " + player->GetName();
                 SendMessageToDungeonPlayersExceptPlayer(player, dungeonMessage.c_str());
             }
@@ -6582,7 +6582,7 @@ public:
         {
             handler->PSendSysMessage("---");
             // Map basics
-            handler->PSendSysMessage("%s (%u-player %s) | ID %u-%u%s",
+            handler->PSendSysMessage("{} ({}-player {}) | ID {}-{}{}",
                                     player->GetMap()->GetMapName(),
                                     player->GetMap()->ToInstanceMap()->GetMaxPlayers(),
                                     player->GetMap()->ToInstanceMap()->IsHeroic() ? "Heroic" : "Normal",
@@ -6594,7 +6594,7 @@ public:
             // if (!mapABInfo->enabled) { return true; }
 
             // Player stats
-            handler->PSendSysMessage("Players on map: %u (Lvl %u - %u)",
+            handler->PSendSysMessage("Players on map: {} (Lvl {} - {})",
                                     mapABInfo->playerCount,
                                     mapABInfo->lowestPlayerLevel,
                                     mapABInfo->highestPlayerLevel
@@ -6603,59 +6603,59 @@ public:
             // Adjusted player count (multiple scenarios)
             if (mapABInfo->combatLockTripped)
             {
-                handler->PSendSysMessage("Adjusted Player Count: %u (Combat Locked)", mapABInfo->adjustedPlayerCount);
+                handler->PSendSysMessage("Adjusted Player Count: {} (Combat Locked)", mapABInfo->adjustedPlayerCount);
             }
             else if (mapABInfo->playerCount < mapABInfo->minPlayers && !PlayerCountDifficultyOffset)
             {
-                handler->PSendSysMessage("Adjusted Player Count: %u (Map Minimum)", mapABInfo->adjustedPlayerCount);
+                handler->PSendSysMessage("Adjusted Player Count: {} (Map Minimum)", mapABInfo->adjustedPlayerCount);
             }
             else if (mapABInfo->playerCount < mapABInfo->minPlayers && PlayerCountDifficultyOffset)
             {
-                handler->PSendSysMessage("Adjusted Player Count: %u (Map Minimum + Difficulty Offset of %u)", mapABInfo->adjustedPlayerCount, PlayerCountDifficultyOffset);
+                handler->PSendSysMessage("Adjusted Player Count: {} (Map Minimum + Difficulty Offset of {})", mapABInfo->adjustedPlayerCount, PlayerCountDifficultyOffset);
             }
             else if (PlayerCountDifficultyOffset)
             {
-                handler->PSendSysMessage("Adjusted Player Count: %u (Difficulty Offset of %u)", mapABInfo->adjustedPlayerCount, PlayerCountDifficultyOffset);
+                handler->PSendSysMessage("Adjusted Player Count: {} (Difficulty Offset of {})", mapABInfo->adjustedPlayerCount, PlayerCountDifficultyOffset);
             }
             else
             {
-                handler->PSendSysMessage("Adjusted Player Count: %u", mapABInfo->adjustedPlayerCount);
+                handler->PSendSysMessage("Adjusted Player Count: {}", mapABInfo->adjustedPlayerCount);
             }
 
             // LFG levels
-            handler->PSendSysMessage("LFG Range: Lvl %u - %u (Target: Lvl %u)", mapABInfo->lfgMinLevel, mapABInfo->lfgMaxLevel, mapABInfo->lfgTargetLevel);
+            handler->PSendSysMessage("LFG Range: Lvl {} - {} (Target: Lvl {})", mapABInfo->lfgMinLevel, mapABInfo->lfgMaxLevel, mapABInfo->lfgTargetLevel);
 
             // Calculated map level (creature average)
-            handler->PSendSysMessage("Map Level: %u%s",
+            handler->PSendSysMessage("Map Level: {}{}",
                                     (uint8)(mapABInfo->avgCreatureLevel+0.5f),
                                     mapABInfo->isLevelScalingEnabled && mapABInfo->enabled ? "->" + std::to_string(mapABInfo->highestPlayerLevel) + " (Level Scaling Enabled)" : " (Level Scaling Disabled)"
                                     );
 
             // World Health Multiplier
-            handler->PSendSysMessage("World health multiplier: %.3f", mapABInfo->worldHealthMultiplier);
+            handler->PSendSysMessage("World health multiplier: {}", mapABInfo->worldHealthMultiplier);
 
             // World Damage and Healing Multiplier
             if (mapABInfo->worldDamageHealingMultiplier != mapABInfo->scaledWorldDamageHealingMultiplier)
             {
-                handler->PSendSysMessage("World hostile damage and healing multiplier: %.3f -> %.3f",
+                handler->PSendSysMessage("World hostile damage and healing multiplier: {} -> {}",
                         mapABInfo->worldDamageHealingMultiplier,
                         mapABInfo->scaledWorldDamageHealingMultiplier
                         );
             }
             else
             {
-                handler->PSendSysMessage("World hostile damage and healing multiplier: %.3f",
+                handler->PSendSysMessage("World hostile damage and healing multiplier: {}",
                         mapABInfo->worldDamageHealingMultiplier
                         );
             }
 
             // Creature Stats
-            handler->PSendSysMessage("Original Creature Level Range: %u - %u (Avg: %.2f)",
+            handler->PSendSysMessage("Original Creature Level Range: {} - {} (Avg: {})",
                                     mapABInfo->lowestCreatureLevel,
                                     mapABInfo->highestCreatureLevel,
                                     mapABInfo->avgCreatureLevel
                                     );
-            handler->PSendSysMessage("Active | Total Creatures in map: %u | %u",
+            handler->PSendSysMessage("Active | Total Creatures in map: {} | {}",
                                     mapABInfo->activeCreatureCount,
                                     mapABInfo->allMapCreatures.size()
                                     );
@@ -6688,22 +6688,22 @@ public:
         AutoBalanceCreatureInfo *targetABInfo=target->CustomData.GetDefault<AutoBalanceCreatureInfo>("AutoBalanceCreatureInfo");
 
         handler->PSendSysMessage("---");
-        handler->PSendSysMessage("%s (%u%s%s), %s",
+        handler->PSendSysMessage("{} ({}{}{}), {}",
                                   target->GetName(),
                                   targetABInfo->UnmodifiedLevel,
                                   isCreatureRelevant(target) && targetABInfo->UnmodifiedLevel != target->GetLevel() ? "->" + std::to_string(targetABInfo->selectedLevel) : "",
                                   isBossOrBossSummon(target) ? " | Boss" : "",
                                   targetABInfo->isActive ? "Active for Map Stats" : "Ignored for Map Stats");
-        handler->PSendSysMessage("Creature difficulty level: %u player(s)", targetABInfo->instancePlayerCount);
+        handler->PSendSysMessage("Creature difficulty level: {} player(s)", targetABInfo->instancePlayerCount);
 
         // summon
         if (target->IsSummon() && targetABInfo->summoner && targetABInfo->isCloneOfSummoner)
         {
-            handler->PSendSysMessage("Clone of %s (%u)", targetABInfo->summonerName, targetABInfo->summonerLevel);
+            handler->PSendSysMessage("Clone of {} ({})", targetABInfo->summonerName, targetABInfo->summonerLevel);
         }
         else if (target->IsSummon() && targetABInfo->summoner)
         {
-            handler->PSendSysMessage("Summon of %s (%u)", targetABInfo->summonerName, targetABInfo->summonerLevel);
+            handler->PSendSysMessage("Summon of {} ({})", targetABInfo->summonerName, targetABInfo->summonerLevel);
         }
         else if (target->IsSummon())
         {
@@ -6713,21 +6713,21 @@ public:
         // level scaled
         if (targetABInfo->UnmodifiedLevel != target->GetLevel())
         {
-            handler->PSendSysMessage("Health multiplier: %.3f -> %.3f", targetABInfo->HealthMultiplier, targetABInfo->ScaledHealthMultiplier);
-            handler->PSendSysMessage("Mana multiplier: %.3f -> %.3f", targetABInfo->ManaMultiplier, targetABInfo->ScaledManaMultiplier);
-            handler->PSendSysMessage("Armor multiplier: %.3f-> %.3f", targetABInfo->ArmorMultiplier, targetABInfo->ScaledArmorMultiplier);
-            handler->PSendSysMessage("Damage multiplier: %.3f -> %.3f", targetABInfo->DamageMultiplier, targetABInfo->ScaledDamageMultiplier);
+            handler->PSendSysMessage("Health multiplier: {} -> {}", targetABInfo->HealthMultiplier, targetABInfo->ScaledHealthMultiplier);
+            handler->PSendSysMessage("Mana multiplier: {} -> {}", targetABInfo->ManaMultiplier, targetABInfo->ScaledManaMultiplier);
+            handler->PSendSysMessage("Armor multiplier: {}-> {}", targetABInfo->ArmorMultiplier, targetABInfo->ScaledArmorMultiplier);
+            handler->PSendSysMessage("Damage multiplier: {} -> {}", targetABInfo->DamageMultiplier, targetABInfo->ScaledDamageMultiplier);
         }
         // not level scaled
         else
         {
-            handler->PSendSysMessage("Health multiplier: %.3f", targetABInfo->HealthMultiplier);
-            handler->PSendSysMessage("Mana multiplier: %.3f", targetABInfo->ManaMultiplier);
-            handler->PSendSysMessage("Armor multiplier: %.3f", targetABInfo->ArmorMultiplier);
-            handler->PSendSysMessage("Damage multiplier: %.3f", targetABInfo->DamageMultiplier);
+            handler->PSendSysMessage("Health multiplier: {}", targetABInfo->HealthMultiplier);
+            handler->PSendSysMessage("Mana multiplier: {}", targetABInfo->ManaMultiplier);
+            handler->PSendSysMessage("Armor multiplier: {}", targetABInfo->ArmorMultiplier);
+            handler->PSendSysMessage("Damage multiplier: {}", targetABInfo->DamageMultiplier);
         }
-        handler->PSendSysMessage("CC Duration multiplier: %.3f", targetABInfo->CCDurationMultiplier);
-        handler->PSendSysMessage("XP multiplier: %.3f  Money multiplier: %.3f", targetABInfo->XPModifier, targetABInfo->MoneyModifier);
+        handler->PSendSysMessage("CC Duration multiplier: {}", targetABInfo->CCDurationMultiplier);
+        handler->PSendSysMessage("XP multiplier: {}  Money multiplier: {}", targetABInfo->XPModifier, targetABInfo->MoneyModifier);
 
         AutoBalanceMapInfo* mapABInfo = target->GetMap()->CustomData.GetDefault<AutoBalanceMapInfo>("AutoBalanceMapInfo");
         float lootDropChanceMultiplier = 1.0f;
@@ -6736,7 +6736,7 @@ public:
         float lootDropChanceBoPMultiplier = 1.0f;
         if (RewardScalingLootBOPAlwaysDropException == false)
             lootDropChanceBoPMultiplier = lootDropChanceMultiplier;
-        handler->PSendSysMessage("Non-BOP,BOP Loot chance multipliers: %.3f,%.3f", lootDropChanceMultiplier, lootDropChanceBoPMultiplier);
+        handler->PSendSysMessage("Non-BOP,BOP Loot chance multipliers: {},{}", lootDropChanceMultiplier, lootDropChanceBoPMultiplier);
 
         return true;
     }
