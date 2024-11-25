@@ -1,4 +1,4 @@
-## Dungeon Balance
+## Dungeon Scale
 
 This module is intended to scale based on number of players, instance mobs and bosses' health, mana, and damage. All settings are well-described in the configuration file.
 
@@ -8,9 +8,9 @@ This module is intended to scale based on number of players, instance mobs and b
 ## In-game Commands
 | Command | Permission | Description |
 | :------ | :--------- | :---------- |
-| `.dungeonbalance setplayers` | All Players | Sets a fixed player count difficulty for the player's current dungeon instance, which doesn't change even if players join or leave. |
-| `.dungeonbalance getmapstat` | All Players | Displays AB-calcualted settings for the current map, including player count, difficulty, world modifiers, and others. |
-| `.dungeonbalance getcreaturestat` | All Players | Displays AB-calculated settings for the targeted dungeon creature including level scaling, difficulty, modifiers, and boss status. |
+| `.dungeonscale setplayers` | All Players | Sets a fixed player count difficulty for the player's current dungeon instance, which doesn't change even if players join or leave. |
+| `.dungeonscale getmapstat` | All Players | Displays AB-calcualted settings for the current map, including player count, difficulty, world modifiers, and others. |
+| `.dungeonscale getcreaturestat` | All Players | Displays AB-calculated settings for the targeted dungeon creature including level scaling, difficulty, modifiers, and boss status. |
 
 ## Logger Names
 | Logger | Description |
