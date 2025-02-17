@@ -3506,14 +3506,14 @@ class AutoBalance_PlayerScript : public PlayerScript
         {
         }
 
-        void OnLogin(Player *Player) override
+        void OnPlayerLogin(Player *Player) override
         {
             if (EnableGlobal && Announcement) {
                 ChatHandler(Player->GetSession()).SendSysMessage("This server is running the |cff4CFF00AutoBalance |rmodule.");
             }
         }
 
-        virtual void OnLevelChanged(Player* player, uint8 oldlevel) override
+        virtual void OnPlayerLevelChanged(Player* player, uint8 oldlevel) override
         {
             LOG_DEBUG("module.AutoBalance", "AutoBalance:: {}", SPACER);
 
@@ -3538,7 +3538,7 @@ class AutoBalance_PlayerScript : public PlayerScript
             mapABInfo->mapConfigTime = GetCurrentConfigTime();
         }
 
-        void OnGiveXP(Player* player, uint32& amount, Unit* victim, uint8 /*xpSource*/) override
+        void OnPlayerGiveXP(Player* player, uint32& amount, Unit* victim, uint8 /*xpSource*/) override
         {
             Map* map = player->GetMap();
 
@@ -3577,7 +3577,7 @@ class AutoBalance_PlayerScript : public PlayerScript
             }
         }
 
-        void OnBeforeLootMoney(Player* player, Loot* loot) override
+        void OnPlayerBeforeLootMoney(Player* player, Loot* loot) override
         {
             Map* map = player->GetMap();
 
